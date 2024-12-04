@@ -1,0 +1,50 @@
+{
+	"author": "vsklyar@naumen.ru",
+	"contributors": [
+		{
+			"name": "Егоров Кирилл",
+			"email": "kegorov@naumen.ru"
+		},
+		{
+			"name": "Раимов Алексей",
+			"email": "araimov@naumen.ru"
+		},
+		{
+			"name": "Скляр Вадим",
+			"email": "vsklyar@naumen.ru"
+		},
+		{
+			"name": "Ерилов Никита",
+			"email": "minitwiks@gmail.com"
+		}
+	],
+	"description": "Types for jsApi",
+	"dependencies": {
+		"yargs": "17.7.2"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.13",
+		"jest": "29.7.0",
+		"jest-environment-jsdom": "29.7.0",
+		"ts-jest": "29.1.2",
+		"typescript": "5.3.3"
+	},
+	"keywords": [
+		"jsApi"
+	],
+	"license": "MIT",
+	"main": "src/index.js",
+	"name": "@nsmp/js-api",
+	"scripts": {
+		"lint": "npx eslint --ext .ts -c .eslintrc ./",
+		"test": "jest"
+	},
+	"smrm": {
+		"ciStaticStages": [
+			"lint",
+			"test"
+		]
+	},
+	"types": "src/index.d.ts",
+	"version": "1.1.0"
+}
