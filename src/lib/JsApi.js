@@ -141,7 +141,7 @@ const jsApi = {
 	async makeResponse (url, options, isJson = false, isExecMF = false) {
 		const { url: makeUrl, method = 'GET', headers, body, responseType } = options;
 		const requestBody = typeof body === 'object' ? JSON.stringify(body) : body;
-		const requestUrl = makeUrl || `${this.getAppRestBaseUrl()}${url}${isExecMF ? '&' : '?'}accessKey=${this.constants.ACCESS_KEY}`;
+		const requestUrl = makeUrl || `${this.getAppRestBaseUrl()}${url}${isExecMF ? '?' : '&'}accessKey=${this.constants.ACCESS_KEY}`;
 
 		try {
 			const response = await fetch(requestUrl, {
