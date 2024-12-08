@@ -162,11 +162,10 @@ const jsApi = {
 				const errorText = await response.text();
 				throw isJson ? JSON.parse(errorText) : errorText;
 			}
-			
 			const responseText = await response.text();
 			const shouldParseToJson = isJson || responseType === 'json';
 
-			if (isExecMF) { return JSON.parse(JSON.parse(responseText));}
+			// if (isExecMF) { return JSON.parse(JSON.parse(responseText));}
 
 			return shouldParseToJson ? JSON.parse(responseText) : responseText;
 		} catch (error) {
