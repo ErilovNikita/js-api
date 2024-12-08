@@ -17,6 +17,9 @@ async function initializeJsApi (
 	} else {
 		// Deep merge нужен для того, чтобы не перезаписывать вложенные методы объекта jsApi.
 		window.jsApi = deepMergeJsApi(jsApi, mock, params);
+
+		window.jsApi.requests.json = window.jsApi.requests.json.bind(window.jsApi);
+		window.jsApi.requests.make = window.jsApi.requests.make.bind(window.jsApi);
 	}
 	return window.jsApi
 }
