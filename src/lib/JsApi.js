@@ -143,9 +143,9 @@ const jsApi = {
 		const requestBody = typeof body === 'object' ? JSON.stringify(body) : body;
 		let requestUrl = makeUrl || `${this.getAppRestBaseUrl()}${url}${isExecMF ? '?' : '&'}accessKey=${this.constants.ACCESS_KEY}`;
 
-		if ( makeUrl && makeUrl.indexOf('accessKey') == -1 ) {
-			requestUrl += `&accessKey=${this.constants.ACCESS_KEY}`
-		}
+		// if ( makeUrl && makeUrl.indexOf('accessKey') == -1 ) {
+		// 	requestUrl += `&accessKey=${this.constants.ACCESS_KEY}`
+		// }
 
 		try {
 			const response = await fetch(requestUrl, {
@@ -268,7 +268,7 @@ const jsApi = {
 		return await this.makeResponse(url, options);
 	},
 	async restCallAsJson (url, options) {
-		return await this.makeResponse(url, options, true);
+		return await this.makeResponse(url, options, true, true);
 	},
 	async restCallModule (moduleCode, functionName, ...args) {
 		let requestBody = [{
