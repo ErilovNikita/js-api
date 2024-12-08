@@ -267,7 +267,7 @@ const jsApi = {
 		return await this.makeResponse(url, options);
 	},
 	async restCallAsJson (url, options) {
-		return await this.makeResponse(url, options, true, true);
+		return await this.makeResponse(url, options, true);
 	},
 	async restCallModule (moduleCode, functionName, ...args) {
 		let requestBody = [{
