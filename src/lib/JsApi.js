@@ -162,12 +162,14 @@ const jsApi = {
 				const errorText = await response.text();
 				throw isJson ? JSON.parse(errorText) : errorText;
 			}
-			const responseText = await response.text();
-			const shouldParseToJson = isJson || responseType === 'json';
-
-			// if (isExecMF) { return JSON.parse(JSON.parse(responseText));}
-
-			return shouldParseToJson ? JSON.parse(responseText) : responseText;
+			if (responseType === 'blob') {
+				return await response.blob();
+			} else if (responseType === 'arraybuffer') {
+				return await response.arrayBuffer();
+			} else {
+				const responseText = await response.text();
+				return isJson || responseType === 'json' ? JSON.parse(responseText) : responseText;
+			}
 		} catch (error) {
 			throw error;
 		}
@@ -205,7 +207,15 @@ const jsApi = {
 	},
 	getCurrentUser () {
 		return {
-			uuid: this.constants.USER_UUID || ''
+			uuid: this.constants.USER_UUID || '',
+			admin: this.constants.USER_ADMIN || false,
+			licensed: this.constants.USER_LICENSED || false,
+			concurrentLicensed: this.constants.USER_CONCURRENT_LICENSED || false,
+			login: this.constants.USER_LOGIN || '',
+			title: this.constants.USER_TITLE || '',
+			operatorLogo: '',
+			profiles: this.constants.USER_PROFILES || '',
+			roles: this.constants.USER_ROLES || ''
 		};
 	},
 	getViewMode () {

@@ -9,6 +9,12 @@ export class InitVariable {
 	SUBJECT_UUID ?: string;
 	USER_LOGIN ?: string;
 	USER_UUID ?: string;
+	USER_ADMIN ?: boolean;
+	USER_LICENSED ?: boolean;
+	USER_CONCURRENT_LICENSED ?: boolean;
+	USER_TITLE ?: string;
+	USER_PROFILES ?: string;
+	USER_ROLES ?: string;
 
 	/**
 	 * @param {string} MODE
@@ -19,6 +25,12 @@ export class InitVariable {
 	 * @param {string} SUBJECT_UUID
 	 * @param {string} USER_LOGIN
 	 * @param {string} USER_UUID
+	 * @param {boolean} USER_ADMIN
+	 * @param {boolean} USER_LICENSED
+	 * @param {boolean} USER_CONCURRENT_LICENSED
+	 * @param {string} USER_TITLE
+	 * @param {string} USER_PROFILES
+	 * @param {string} USER_ROLES
 	 */
 	constructor (
 		MODE : string,
@@ -28,7 +40,13 @@ export class InitVariable {
 		REST_PATH : string,
 		SUBJECT_UUID ?: string,
 		USER_LOGIN ?: string,
-		USER_UUID ?: string
+		USER_UUID ?: string,
+		USER_ADMIN ?: boolean,
+		USER_LICENSED ?: boolean,
+		USER_CONCURRENT_LICENSED ?: boolean,
+		USER_TITLE ?: string,
+		USER_PROFILES ?: string,
+		USER_ROLES ?: string
 	) : InitVariable
 }
 

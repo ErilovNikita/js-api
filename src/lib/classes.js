@@ -7,6 +7,14 @@ export class InitVariable {
 	SUBJECT_UUID;
 	USER_LOGIN;
 	USER_UUID;
+	USER_LOGIN;
+	USER_UUID;
+	USER_ADMIN;
+	USER_LICENSED;
+	USER_CONCURRENT_LICENSED;
+	USER_TITLE;
+	USER_PROFILES;
+	USER_ROLES;
 
 	/**
 	 * @param {string} MODE
@@ -17,8 +25,14 @@ export class InitVariable {
 	 * @param {string} SUBJECT_UUID
 	 * @param {string} USER_LOGIN
 	 * @param {string} USER_UUID
+	 * @param {boolean} USER_ADMIN
+	 * @param {boolean} USER_LICENSED
+	 * @param {boolean} USER_CONCURRENT_LICENSED
+	 * @param {string} USER_TITLE
+	 * @param {string} USER_PROFILES
+	 * @param {string} USER_ROLES
 	 */
-	constructor (MODE, ACCESS_KEY, APP_URL, APP_CODE, REST_PATH, SUBJECT_UUID, USER_LOGIN, USER_UUID) {
+	constructor (MODE, ACCESS_KEY, APP_URL, APP_CODE, REST_PATH, SUBJECT_UUID, USER_LOGIN, USER_UUID, USER_ADMIN, USER_LICENSED, USER_CONCURRENT_LICENSED, USER_TITLE, USER_PROFILES, USER_ROLES) {
 		this.MODE = MODE;
 		this.ACCESS_KEY = ACCESS_KEY;
 		this.APP_URL = APP_URL;
@@ -27,6 +41,12 @@ export class InitVariable {
 		this.SUBJECT_UUID = SUBJECT_UUID;
 		this.USER_LOGIN = USER_LOGIN;
 		this.USER_UUID = USER_UUID;
+		this.USER_ADMIN = USER_ADMIN;
+		this.USER_LICENSED = USER_LICENSED;
+		this.USER_CONCURRENT_LICENSED = USER_CONCURRENT_LICENSED;
+		this.USER_TITLE = USER_TITLE;
+		this.USER_PROFILES = USER_PROFILES;
+		this.USER_ROLES = USER_ROLES;
 		return this;
 	}
 }

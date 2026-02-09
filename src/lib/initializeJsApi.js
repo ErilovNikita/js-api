@@ -12,6 +12,7 @@ async function initializeJsApi (
 	mock = {},
 	params = null
 ) {
+	console.log(params)
 	if ( !params || params?.MODE == 'production') {
 		await window.parent.injectJsApi(window.parent, window);
 	} else {

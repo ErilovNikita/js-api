@@ -496,6 +496,14 @@ export interface IJsApi {
 	 */
 	getCurrentUser (): {
 		uuid: string
+		admin: boolean
+		licensed: boolean
+		concurrentLicensed: boolean
+		login: string
+		title: string
+		operatorLogo: string
+		profiles: string[]
+		roles: string[]
 	},
 
 	/**

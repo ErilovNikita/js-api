@@ -18,11 +18,16 @@
 
 ## Содержание <a name="table-of-contents"></a>
 
-- [Быстрый старт](#quick-start)
-- [Инициализация jsApi](#initializeJsApi)
-- [Переопределение методов jsApi](#mockJsApi)
-- [Типизация jsApi](#types)
-- [Настройка проксирования запросов](#proxy)
+- [jsApi](#jsapi)
+  - [Изменения](#изменения)
+  - [Содержание ](#содержание-)
+  - [Быстрый старт ](#быстрый-старт-)
+  - [Инициализация jsApi ](#инициализация-jsapi-)
+  - [Переопределение методов jsApi ](#переопределение-методов-jsapi-)
+  - [Типизация jsApi ](#типизация-jsapi-)
+  - [Настройка проксирования запросов ](#настройка-проксирования-запросов-)
+        - [Webpack:](#webpack)
+        - [Vite:](#vite)
 
 ## Быстрый старт <a name="quick-start"></a>
 
@@ -90,7 +95,15 @@ const mockJsApi: PartialJsApi = {
 	},
 	getCurrentUser () {
 		return {
-			uuid: 'user$123'
+			uuid: 'superUser$system',
+      admin: true,
+      licensed: true,
+      concurrentLicensed: false,
+      login: "system",
+      title: "system",
+      operatorLogo: "file$72776097",
+      profiles: ["webInterface_Administrator"],
+      roles: ["ROLE_SUPERUSER", "ROLE_ADMIN", "ROLE_ADMIN_LITE", "ROLE_SUPER_OPERATOR", "ROLE_OPERATOR"]
 		};
 	},
 	urls: {
