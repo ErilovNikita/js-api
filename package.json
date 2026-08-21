@@ -1,6 +1,6 @@
 {
   "name": "@minitwiks/js-api",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Unofficial Vue and Vite adaptation of @nsmp/js-api",
   "license": "MIT",
   "author": {
@@ -10,11 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/minitwiks/nsmp-js-api-vue.git"
+    "url": "git+https://github.com/ErilovNikita/js-api.git"
   },
-  "homepage": "https://github.com/minitwiks/nsmp-js-api-vue#readme",
+  "homepage": "https://github.com/ErilovNikita/js-api#readme",
   "bugs": {
-    "url": "https://github.com/minitwiks/nsmp-js-api-vue/issues"
+    "url": "https://github.com/ErilovNikita/js-api/issues"
   },
   "keywords": [
     "nsmp",
