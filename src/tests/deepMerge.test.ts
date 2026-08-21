@@ -1,7 +1,7 @@
-import { deepMergeJsApi } from './index';
-import initializeJsApi from '../lib/initializeJsApi';
-import { InitVariable } from '../lib/classes';
-import { PartialJsApi } from '../types';
+import { deepMergeJsApi } from '../core/deepMerge'
+import initializeJsApi from '../api/initialize'
+import { InitVariable } from '../core/classes'
+import { PartialJsApi } from '../types'
 
 describe('Функция deepMergeJsApi()', () => {
 	/**
@@ -11,27 +11,27 @@ describe('Функция deepMergeJsApi()', () => {
 	function cancel () {}
 
 	function getCurrentLocale () {
-		return 'ru';
+		return 'ru'
 	}
 
 	function getType () {
-		return "objectCard";
+		return "objectCard"
 	}
 
 	function getValues () {
-		return Promise.resolve({});
+		return Promise.resolve({})
 	}
 
 	function isAddForm () {
-		return false;
+		return false
 	}
 
 	function isEditForm () {
-		return false;
+		return false
 	}
 
 	function isModal () {
-		return false;
+		return false
 	}
 
 	const firstJsApi: PartialJsApi = {
@@ -42,13 +42,13 @@ describe('Функция deepMergeJsApi()', () => {
 		},
 		isAddForm,
 		isEditForm
-	};
+	}
 	const secondJsApi: PartialJsApi = {
 		forms: {
 			isModal
 		},
 		getCurrentLocale
-	};
+	}
 	const fullJsApi: PartialJsApi = {
 		forms: {
 			cancel,
@@ -59,55 +59,43 @@ describe('Функция deepMergeJsApi()', () => {
 		getCurrentLocale,
 		isAddForm,
 		isEditForm
-	};
+	}
 
 	it('Возвращает глубокое объединение двух объектов jsApi', () => {
-		expect(deepMergeJsApi<PartialJsApi>(firstJsApi, secondJsApi) == fullJsApi);
-	});
-});
+		expect(deepMergeJsApi<PartialJsApi>(firstJsApi, secondJsApi) == fullJsApi)
+	})
+})
 
 describe('Функция jsApi.getAppBaseUrl()', () => {
-	const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-
-    const mock = {}
-
-    const env = new InitVariable(
-        process.env.ACCESS_KEY || '',
-        process.env.APP_URL || '',
-        process.env.APP_CODE || '',
-        process.env.REST_PATH || '',
-        process.env.SUBJECT_UUID || '',
-        process.env.USER_LOGIN || '',
-        process.env.USER_UUID
-    )
-
-    initializeJsApi( mock, env )
+	const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {})
+    initializeJsApi( {}, new InitVariable('development','','','','') )
 
 	it('Вызывает alert и возвращает пустую строку, если ссылка на приложение не назначена', () => {
-		const appBaseUrl = window.jsApi.getAppBaseUrl();
+		window.jsApi.constants.APP_URL = ''
+		const appBaseUrl = window.jsApi.getAppBaseUrl()
 
-		expect(alertSpy).toHaveBeenCalledWith('Ссылка на приложение не передана или имеет неверный формат');
-		expect(appBaseUrl).toBe('');
-	});
+		expect(alertSpy).toHaveBeenCalledWith('Ссылка на приложение не передана или имеет неверный формат')
+		expect(appBaseUrl).toBe('')
+	})
 
 	it('Вызывает alert и возвращает пустую строку, если ссылка на приложение имеет неверный формат', () => {
-		process.env.APP_URL = 'not link';
+		window.jsApi.constants.APP_URL = 'not link'
 
-		const appBaseUrl = window.jsApi.getAppBaseUrl();
+		const appBaseUrl = window.jsApi.getAppBaseUrl()
 
-		expect(alertSpy).toHaveBeenCalledWith('Ссылка на приложение не передана или имеет неверный формат');
-		expect(appBaseUrl).toBe('');
-	});
+		expect(alertSpy).toHaveBeenCalledWith('Ссылка на приложение не передана или имеет неверный формат')
+		expect(appBaseUrl).toBe('')
+	})
 
 	it('Возвращает ссылку на приложение, если передана ссылка с слэшем в конце', () => {
-		process.env.APP_URL = 'https://domain.ru/';
+		window.jsApi.constants.APP_URL = 'https://domain.ru/'
 
-		expect(window.jsApi.getAppBaseUrl() == 'https://domain.ru/sd/');
-	});
+		expect(window.jsApi.getAppBaseUrl()).toBe('https://domain.ru/sd/')
+	})
 
 	it('Возвращает ссылку на приложение, если передана ссылка без слэша в конце', () => {
-		process.env.APP_URL = 'https://domain.ru';
+		window.jsApi.constants.APP_URL = 'https://domain.ru'
 
-		expect(window.jsApi.getAppBaseUrl() == 'https://domain.ru/sd/');
-	});
-});
+		expect(window.jsApi.getAppBaseUrl()).toBe('https://domain.ru/sd/')
+	})
+})

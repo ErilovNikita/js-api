@@ -10,9 +10,7 @@ module.exports = {
 	],
 	testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(t|j)s?$',
 	transform: {
-		'^.+\\.[t|j]s?$': ['ts-jest', {
-			isolatedModules: true
-		}]
+		'^.+\\.[t|j]s?$': 'ts-jest'
 	},
 	verbose: true
-};
+}

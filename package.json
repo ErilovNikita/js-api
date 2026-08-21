@@ -1,49 +1,94 @@
 {
-	"author": "vsklyar@naumen.ru",
-	"contributors": [
-		{
-			"name": "Егоров Кирилл",
-			"email": "kegorov@naumen.ru"
-		},
-		{
-			"name": "Раимов Алексей",
-			"email": "araimov@naumen.ru"
-		},
-		{
-			"name": "Скляр Вадим",
-			"email": "vsklyar@naumen.ru"
-		},
-		{
-			"name": "Ерилов Никита",
-			"email": "minitwiks@gmail.com"
-		}
-	],
-	"description": "Types for jsApi",
-	"dependencies": {
-		"yargs": "17.7.2"
-	},
-	"devDependencies": {
-		"@types/jest": "^29.5.13",
-		"jest-environment-jsdom": "29.7.0",
-		"ts-jest": "29.1.2",
-		"typescript": "5.3.3"
-	},
-	"keywords": [
-		"jsApi"
-	],
-	"license": "MIT",
-	"main": "src/index.js",
-	"name": "@nsmp/js-api",
-	"scripts": {
-		"lint": "npx eslint --ext .ts -c .eslintrc ./",
-		"test": "jest"
-	},
-	"smrm": {
-		"ciStaticStages": [
-			"lint",
-			"test"
-		]
-	},
-	"types": "src/index.d.ts",
-	"version": "1.1.0"
+  "name": "@minitwiks/js-api",
+  "version": "2.1.0",
+  "description": "Unofficial Vue and Vite adaptation of @nsmp/js-api",
+  "license": "MIT",
+  "author": {
+    "name": "Nikita Erilov",
+    "email": "minitwiks@gmail.com",
+    "url": "https://github.com/minitwiks"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minitwiks/nsmp-js-api-vue.git"
+  },
+  "homepage": "https://github.com/minitwiks/nsmp-js-api-vue#readme",
+  "bugs": {
+    "url": "https://github.com/minitwiks/nsmp-js-api-vue/issues"
+  },
+  "keywords": [
+    "nsmp",
+    "jsapi",
+    "js-api",
+    "naumen",
+    "vue",
+    "vue3",
+    "vite",
+    "embedded-application"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./vue": {
+      "types": "./dist/index-vue.d.ts",
+      "import": "./dist/index-vue.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "peerDependencies": {
+    "vue": "^3.3.0"
+  },
+  "peerDependenciesMeta": {
+    "vue": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.3.3",
+    "vite": "^7.0.0",
+    "vue": "^3.3.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/jest",
+    "typecheck": "./node_modules/.bin/tsc --noEmit",
+    "build": "./node_modules/.bin/vite build && ./node_modules/.bin/tsc --declaration --emitDeclarationOnly --declarationDir dist",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/minitwiks"
+  },
+  "x-upstream": {
+    "name": "@nsmp/js-api",
+    "version": "1.1.0",
+    "url": "https://www.npmjs.com/package/@nsmp/js-api/v/1.1.0",
+    "license": "MIT",
+    "author": "vsklyar@naumen.ru",
+    "note": "This package is an independently maintained derivative and is not an official @nsmp/js-api distribution."
+  }
 }
