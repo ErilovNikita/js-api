@@ -1,215 +1,308 @@
-# jsApi
+# @minitwiks/js-api
+
+TypeScript-библиотека с типизированным mock-слоем и инициализацией `jsApi` для встроенных приложений NSMP.
 
 > [!NOTE]
-> Это независимо поддерживаемая производная версия npm-пакета
-> [`@nsmp/js-api`](https://www.npmjs.com/package/@nsmp/js-api)
->
-> Репозиторий не является официальным проектом авторов `@nsmp/js-api`
-> и не связан с ними организационно.
+> Это независимо поддерживаемая производная версия [`@nsmp/js-api`](https://www.npmjs.com/package/@nsmp/js-api).
+> Пакет не является официальным проектом авторов `@nsmp/js-api` и не связан с ними организационно.
 
-Пакет предназначен для разработчиков встроенных приложений и предоставляет инструменты для улучшения и оптимизации процесса разработки. Пакет предоставляет:
-- Функцию `initializeJsApi` для подключения jsApi в разных режимах (development, test, production)
-- Файлы декларации типов `.d.ts` для jsApi при работе с `TypeScript`
-- `Mock`-функции jsApi для локальной разработки, а также инструменты для их переопределения и уточнения
-- Инструменты для локальной разработки с проксированием запросов к приложению
+> [!WARNING]
+> Последняя версия с обратной совместимостью — [`1.1.0`](https://github.com/minitwiks/nsmp-js-api-vue/releases/tag/v1.1.0).
+> Версии начиная с `2.0.0` содержат критические изменения и не имеют обратную совместимость с API версии `1.1.0`.
+> Перед обновлением на `2.x` и выше проверьте migration notes и адаптируйте инициализацию, типы и импорты проекта.
 
-## Изменения
-- [x] Поддержка Vue
-- [x] сomposable `useJsApi`
-- [x] Совместимость с Vite и `import.meta.env`
-- [x] Отсутствие обязательного React
-- [x] Удаление Webpack-зависимостей
-- [x] поддержка SSR или безопасного импорта без `window`
-- [x] Исправлены ошибки в юнит тестах
-- [x] Добавлена документация о инициализации библиотеки под Vite
+## Возможности
 
-## Содержание <a name="table-of-contents"></a>
+- TypeScript API и декларации типов
+- локальный mock `jsApi` для разработки и тестов
+- глубокое переопределение отдельных методов через `PartialJsApi`
+- автоматическое создание `InitVariable` из ENV
+- несколько ENV-ключей для каждого параметра с приоритетом первого непустого значения
+- поддержка Vite `import.meta.env`
+- подключение настоящего `jsApi` в production NSMP через `window.parent.injectJsApi`
+- mock-реализации команд, форм, REST, URL, utils и WebSocket API
+- сборка в ESM и CommonJS
+- Jest-тесты и отдельная генерация `.d.ts`
 
-- [jsApi](#jsapi)
-  - [Изменения](#изменения)
-  - [Содержание ](#содержание-)
-  - [Быстрый старт ](#быстрый-старт-)
-  - [Инициализация jsApi ](#инициализация-jsapi-)
-  - [Переопределение методов jsApi ](#переопределение-методов-jsapi-)
-  - [Типизация jsApi ](#типизация-jsapi-)
-  - [Настройка проксирования запросов ](#настройка-проксирования-запросов-)
-        - [Webpack:](#webpack)
-        - [Vite:](#vite)
+## Установка
 
-## Быстрый старт <a name="quick-start"></a>
+```bash
+npm install @minitwiks/js-api
+```
 
-1. Установить пакет: ```npm i --save-dev @nsmp/js-api```
-2. Инициализировать jsApi в проекте - [Инициализация jsApi](#initializeJsApi)
-3. В режиме разработки (при необходимости):
-   1. переопределить стандартные методы jsApi - [Переопределение методов jsApi](#mockJsApi)
-   2. настроить проксирование запросов - [Настройка проксирования запросов](#proxy)
+Пакет не требует кастомных зависимостей.
 
-[К содержанию](#table-of-contents)
+Его можно использовать в Vue, React, Svelte или обычном браузерном приложении.
 
-## Инициализация jsApi <a name="initializeJsApi"></a>
+## Быстрый старт
 
-Для того чтобы методы jsApi работали во встроенном приложении, необходимо инициализировать их в проекте. Для инициализации jsApi необходимо вызвать функцию `initializeJsApi` из `@nsmp/js-api`. Функция принимает аргументы:
-- `mock?: JsApi` - моковый jsApi, определенный во встроенном приложении. Если передан, то переопределит стандартные функции jsApi - [Переопределение методов jsApi](#mockJsApi)
-- `params?: InitVariable` - Дополнительные параметры инициализации (Для тестирования вне SMP)
+### Vite и локальная разработка
 
-Пример:
+Vite передаёт переменные окружения через `import.meta.env`. Передайте их в фабрику `createInitVariableFromEnv`:
 
 ```typescript
-import {initializeJsApi} from '@nsmp/js-api';
+import {createApp} from 'vue'
+import App from './App.vue'
+import {
+  createInitVariableFromEnv,
+  initializeJsApi
+} from '@minitwiks/js-api'
 
-// В режиме разработки будут использоваться методы jsApi, которые определены в пакете @nsmp/js-api
-initializeJsApi()
-  .then(() => {
-     // Рендер приложения
+const params = createInitVariableFromEnv(import.meta.env)
+
+initializeJsApi({}, params)
+  .then(jsApi => {
+    const app = createApp(App)
+
+    app.provide('jsApi', jsApi)
+    app.mount('#app')
   })
-  .catch((e) => {
-    console.error(e)
+  .catch((error: unknown) => {
+    console.error(error)
   })
 ```
 
-Или
+В локальном браузерном запуске без `window.parent.injectJsApi` библиотека использует mock-реализацию.
+
+### Production внутри NSMP
+
+Если приложение запускается внутри NSMP, а родительское окно предоставляет `injectJsApi`, можно вызвать:
 
 ```typescript
-import {initializeJsApi} from '@nsmp/js-api';
-import mockJsApi from 'mocks/mockJsApi';
+import {initializeJsApi} from '@minitwiks/js-api'
 
-// В режиме разработки методы из переменной mockJsApi переопределят методы jsApi, которые есть в библиотеке
-initializeJsApi(mockJsApi)
-  .then(() => {
-     // Рендер приложения
-  })
-  .catch((e) => {
-    console.error(e)
-  })
+initializeJsApi().then(jsApi => {
+  // Рендер приложения после подключения настоящего jsApi
+})
 ```
 
-[К содержанию](#table-of-contents)
+В production библиотека вызывает `window.parent.injectJsApi(window.parent, window)`.
 
-## Переопределение методов jsApi <a name="mockJsApi"></a>
+### Явный production-режим
 
-В пакете есть возможность переопределить стандартные методы. Для этого необходимо создать переменную в проекте, которая будет хранить новые значения методов jsApi, например:
+Для явного указания режима передайте `InitVariable`:
 
 ```typescript
-import {PartialJsApi} from '@nsmp/js-api';
+import {InitVariable, initializeJsApi} from '@minitwiks/js-api'
 
-// При работе с TypeScript указан тип PartialJsApi
-const mockJsApi: PartialJsApi = {
-	extractSubjectUuid () {
-		return 'subjectUuid$123';
-	},
-	findContentCode () {
-		return 'contentCode';
-	},
-	getCurrentUser () {
-		return {
-			uuid: 'superUser$system',
-      admin: true,
-      licensed: true,
-      concurrentLicensed: false,
-      login: "system",
-      title: "system",
-      operatorLogo: "file$72776097",
-      profiles: ["webInterface_Administrator"],
-      roles: ["ROLE_SUPERUSER", "ROLE_ADMIN", "ROLE_ADMIN_LITE", "ROLE_SUPER_OPERATOR", "ROLE_OPERATOR"]
-		};
-	},
-	urls: {
-		objectCard: (uuid: string) => `/${uuid}`
-	}
-};
+const params = new InitVariable(
+  'production',
+  '',
+  '',
+  '',
+  ''
+)
+
+initializeJsApi({}, params)
 ```
 
-При работе с TypeScript переменной с моковыми методами jsApi можно указать тип PartialJsApi из данного пакета - [Типизация jsApi](#types)
+Если `injectJsApi` отсутствует, явный production-запуск завершится понятной ошибкой.
 
-[К содержанию](#table-of-contents)
+## ENV-конфигурация
 
-## Типизация jsApi <a name="types"></a>
+### Стандартные соответствия
 
-В пакете определены типы для методов jsApi для разработки приложений с использованием TypeScript:
-- `JsApi` - содержит все методы jsApi. При его использовании необходимо задать все методы, которые определены в пакете jsApi, все методы будут заменены новыми
-- `PartialJsApi` - также содержит все методы jsApi. Но при его использовании можно задать только те методы, которые необходимо переопределить, остальные методы останутся без изменений
+Таблица экспортируется из `initVariableEnvMapping`:
 
-Если нужно создать моки с частичным переопределением функций, а затем передать их в `initializeJsApi`, следует использовать тип `PartialJsApi` при создании моков.
+| `InitVariable` | ENV-ключи по приоритету |
+| --- | --- |
+| `MODE` | `MODE`, `NODE_ENV` |
+| `ACCESS_KEY` | `ACCESS_KEY`, `VITE_ACCESS_KEY` |
+| `APP_URL` | `APP_URL`, `VITE_APP_URL`, `REAL_APP_URL` |
+| `APP_CODE` | `APP_CODE`, `VITE_APP_CODE` |
+| `REST_PATH` | `REST_PATH`, `VITE_REST_PATH` |
+| `SUBJECT_UUID` | `SUBJECT_UUID`, `VITE_SUBJECT_UUID` |
+| `USER_LOGIN` | `USER_LOGIN`, `VITE_USER_LOGIN` |
+| `USER_UUID` | `USER_UUID`, `VITE_USER_UUID` |
+| `USER_ADMIN` | `USER_ADMIN`, `VITE_USER_ADMIN` |
+| `USER_LICENSED` | `USER_LICENSED`, `VITE_USER_LICENSED` |
+| `USER_CONCURRENT_LICENSED` | `USER_CONCURRENT_LICENSED`, `VITE_USER_CONCURRENT_LICENSED` |
+| `USER_TITLE` | `USER_TITLE`, `VITE_USER_TITLE` |
+| `USER_PROFILES` | `USER_PROFILES`, `VITE_USER_PROFILES` |
+| `USER_ROLES` | `USER_ROLES`, `VITE_USER_ROLES` |
 
-Пример:
+Используется первое непустое значение. Для boolean-полей значения `true`, `1`, `yes` и `on` преобразуются в `true`, остальные заданные значения в `false`.
+
+### Пример `.env.development`
+
+```env
+VITE_ACCESS_KEY=local-token
+VITE_APP_URL=http://localhost:5173/
+VITE_APP_CODE=my-embedded-app
+VITE_REST_PATH=rest
+VITE_SUBJECT_UUID=subject-uuid
+VITE_USER_UUID=user-uuid
+VITE_USER_LOGIN=developer
+VITE_USER_ADMIN=false
+```
+
+### Собственная таблица соответствий
+
+Можно задать свои имена ENV-ключей, сохранив остальные значения по умолчанию:
 
 ```typescript
-import {PartialJsApi} from '@nsmp/js-api';
+import {
+  createInitVariableFromEnv,
+  initVariableEnvMapping,
+  initializeJsApi
+} from '@minitwiks/js-api'
+
+const mapping = {
+  ...initVariableEnvMapping,
+  APP_URL: ['MY_APP_URL', 'APP_URL', 'VITE_APP_URL']
+}
+
+const params = createInitVariableFromEnv(import.meta.env, mapping)
+initializeJsApi({}, params)
+```
+
+## Mock и переопределение методов
+
+`initializeJsApi` принимает частичный mock. Указанные методы заменяют только соответствующие методы стандартного mock:
+
+```typescript
+import {initializeJsApi, type PartialJsApi} from '@minitwiks/js-api'
 
 const mock: PartialJsApi = {
-  extractSubjectUuid () {
-    return 'subjectUuid$123';
-  },
-  findContentCode () {
-    return 'contentCode';
-  },
+  extractSubjectUuid: () => 'subject-uuid$123',
+  findContentCode: () => 'content-code',
+  getCurrentUser: () => ({
+    uuid: 'user-uuid',
+    admin: true,
+    licensed: true,
+    concurrentLicensed: false,
+    login: 'developer',
+    title: 'Developer',
+    operatorLogo: '',
+    profiles: ['administrator'],
+    roles: ['ROLE_ADMIN']
+  }),
+  urls: {
+    objectCard: uuid => `/objects/${uuid}`
+  }
 }
 
 initializeJsApi(mock)
 ```
 
-[К содержанию](#table-of-contents)
+Вложенные объекты объединяются глубоко, поэтому переопределение `urls.objectCard` не заменяет остальные URL-методы.
 
-## Настройка проксирования запросов <a name="proxy"></a>
-Пакет имеет возможность проксирования запросов в режиме локальной разработки приложения. Чтобы проксирование запросов работало правильно, необходимо указать параметры при инициализации 
+## Основной API
 
-> Настройчего рекомендуем использовать переменные окружения для указания параметров инициализации jsApi
-> `MODE = import.meta.env.MODE`
-> `ACCESS_KEY = import.meta.env.VITE_ACCESS_KEY`
+После инициализации доступен объект `jsApi` со следующими группами:
 
-Пример:
+| Группа | Назначение |
+| --- | --- |
+| `commands` | переход к карточке, quick add/edit и выбор объекта |
+| `configuration` | вызов методов конфигурации |
+| `contents` | размеры iframe, параметры контента и высота приложения |
+| `eventActions` | выполнение пользовательского действия по событию |
+| `events` | подписки на изменения полей, объекта и permissions |
+| `forms` | тип формы, значения, смена состояния и ответственного |
+| `modals` | информация о модальном окне и `DialogBuilder` |
+| `page` | размеры страницы и заголовка |
+| `requests` | JSON- и текстовые запросы |
+| `urls` | генерация URL NSMP |
+| `utils` | mock CRUD и параметры поиска |
+| `ws` | mock WebSocket-команды |
+
+Также доступны методы `getAppBaseUrl`, `getAppRestBaseUrl`, `getCurrentUser`, `getCurrentLocale`, `getViewMode`, `getWebViewType`, `extractSubjectUuid`, `findApplicationCode`, `findContentCode`, `isAddForm`, `isEditForm`, `isOnObjectCard`, `restCall`, `restCallAsJson` и `restCallModule`.
+
+### REST-запросы
 
 ```typescript
-import { initializeJsApi, InitVariable} from '@nsmp/js-api'
+const response = await window.jsApi.restCallAsJson<{items: string[]}>('/objects', {
+  method: 'GET'
+})
 
-const mockJsApi = {}
-const params = new InitVariable(
-  "MODE",         // Выбор окружения для запуска
-  "ACCESS_KEY",   // Ключ доступа для REST запросов
-  "APP_URL",      // URL стенда
-  "APP_CODE",     // Код ВП, примеч. код ВП и код контента должны совпадать
-  "REST_PATH",    // Путь REST запроса (rest или earest)
-  "SUBJECT_UUID", // Идентификатор объекта, на котором выведено ВП
-  "USER_LOGIN",   // Логин пользователя
-  "USER_UUID"     // Идентификатор пользователя
-)
-
-initializeJsApi(mockJsApi, params)
-  .then(() => {
-    // Рендер приложения
-  })
-  .catch((e) => {
-    console.error(e)
-  })
+const text = await window.jsApi.restCall('/health', {
+  method: 'GET'
+})
 ```
 
-Для указания режима проксирования необходимо изменить строку запуска `dev` режима приложения в файле package.json
+Для `requests.json` и `restCallAsJson` ответ разбирается через `JSON.parse`. `restCall` и `requests.make` возвращают текстовый ответ. `responseType: 'blob'` и `responseType: 'arraybuffer'` поддерживаются mock-слоем.
 
-##### Webpack:
-```json 
-"dev": "cross-env NODE_ENV=development webpack serve --mode=development --config ./webpack/config.js"
-```
-Изменить на: 
-```json 
-"dev": "cross-env NODE_ENV=development start-webpack-server --mode=development --config ./webpack/config.js --env ./dev.env"
-```
+### Параметры utils
 
-`config` и `env` являются опциональными аргументами командной строки. Если они не указаны по стандарту будут браться пути:
-- `config` - `./webpack/config.js`
-- `env` - `./dev.env`
+```typescript
+const params = window.jsApi.utils
+  .buildParams()
+  .ignoreCase()
+  .limit(20)
+  .offset(0)
+  .attrs(['title', 'state'])
 
-Команда `start-webpack-server` запускает webpack server с добавленным в него проксированием запросов и всеми переменными окружения из файла `dev.env`
-
-##### Vite:
-
-```json 
-"dev": "vite"
-```
-Изменить на: 
-```json 
-"dev": "vite --mode development"
+const object = await window.jsApi.utils.get('object-uuid', params)
 ```
 
-По умолчанию будут использоваться файлы `.env.[mode]`
+## TypeScript
 
-[К содержанию](#table-of-contents)
+Основные экспортируемые типы:
+
+- `IJsApi` — полный контракт API
+- `PartialJsApi` — рекурсивно частичный контракт для mock-объектов
+- `InitVariable` — параметры инициализации
+- `Environment` — объект ENV для `createInitVariableFromEnv`
+- `InitVariableEnvMapping` — тип таблицы соответствий
+- типы REST, форм, атрибутов, WebSocket и dialog API
+
+```typescript
+import type {IJsApi, PartialJsApi} from '@minitwiks/js-api'
+```
+
+## Сборка и тесты
+
+Установить зависимости:
+
+```bash
+npm install
+```
+
+Проверить TypeScript:
+
+```bash
+npm run typecheck
+```
+
+Запустить Jest:
+
+```bash
+npm test
+```
+
+Собрать ESM, CommonJS и декларации:
+
+```bash
+npm run build
+```
+
+Результат сборки находится в `dist`:
+
+```text
+dist/index.js
+dist/index.cjs
+dist/index.d.ts
+```
+
+## Структура проекта
+
+```text
+src/
+  api/       runtime jsApi и initializeJsApi
+  config/    ENV mapping и фабрика InitVariable
+  core/      классы и deep merge
+  types/     публичные TypeScript-контракты
+  tests/     Jest-тесты
+  index.ts   публичный entrypoint
+```
+
+## Ограничения
+
+- `initializeJsApi` и mock-методы используют browser API: `window`, `document`, `fetch`, `alert`, `confirm` и `window.open`.
+- Для SSR импорт типов безопасен, но вызывать `initializeJsApi` следует только на клиенте.
+- Реальный production API доступен только внутри NSMP, где родительское окно предоставляет `injectJsApi`.
+- В локальном режиме mock-методы имитируют поведение API и не заменяют настоящий backend NSMP.
+
+## Лицензия
+
+MIT. Подробности находятся в [LICENSE](LICENSE).
